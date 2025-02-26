@@ -1,0 +1,11 @@
+# Valid UTF-8 Characters
+English: This is a valid UTF-8 encoded sentence.
+Greek: Αυτό είναι μια έγκυρη πρόταση κωδικοποιημένη σε UTF-8.
+
+# Invalid UTF-8 Characters
+Overlong Encoding: \xC0\xAF ��
+Invalid Byte: \xC3\x28 �(
+Unexpected Continuation Byte: \xA0\xA1 ��
+Truncated Character Sequence: \xE2\x82 �
+Invalid Code Point: \xF5\x90\x80\x80 ����
+

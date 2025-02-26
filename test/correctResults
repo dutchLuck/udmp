@@ -1,0 +1,174 @@
+
+++++++++++ udmp gen1_1.txt  +++Small valid Hebrew (right to left text) file, no options check++++++++++
+בראשית ברא אלהים את השמים ואת הארץ׃
+++++++++++ Shell got Return code number 0 for small valid file gen1_1.txt, no options check++++++++++
+
+++++++++++ udmp -IHACv gen1_1.txt +++Small file, Index, Hex, Ascii, UTF-8 Code points and verbose options check++++++++++
+udmp version 0v0
+Info: Start of File "gen1_1.txt"
+         0  d7 91 d7 a8 d7 90 d7 a9 d7 99 d7 aa  ............  בראשית        X+005d1 X+005e8 X+005d0 X+005e9 X+005d9 X+005ea
+        12  20 d7 91 d7 a8 d7 90 20 d7 90 d7 9c  ␠......␠....  ␠ברא␠אל       X+00020 X+005d1 X+005e8 X+005d0 X+00020 X+005d0 X+005dc
+        24  d7 94 d7 99 d7 9d 20 d7 90 d7 aa 20  ......␠....␠  הים␠את␠       X+005d4 X+005d9 X+005dd X+00020 X+005d0 X+005ea X+00020
+        36  d7 94 d7 a9 d7 9e d7 99 d7 9d 20 d7  ..........␠.  השמים␠ו       X+005d4 X+005e9 X+005de X+005d9 X+005dd X+00020 X+005d5
+        48  95 d7 90 d7 aa 20 d7 94 d7 90 d7 a8  .....␠......  את␠האר        X+005d0 X+005ea X+00020 X+005d4 X+005d0 X+005e8
+        60  d7 a5 d7 83 0d 0a                    ....␍␊        ץ׃␍␊          X+005e5 X+005c3 X+0000d X+0000a
+Info: 66 Bytes, 37 Code Points output, 8 substitutions
+Info: End of File "gen1_1.txt" (66 data bytes processed)
+++++++++++ Shell got Return code number 0 for small file, no address, no ascii and verbose options check++++++++++
+
+++++++++++ udmp -w2 -C gen1_1.txt +++Small file with 2 byte wide lines and Code points++++++++++
+ב   X+005d1
+ר   X+005e8
+א   X+005d0
+ש   X+005e9
+י   X+005d9
+ת   X+005ea
+␠ב  X+00020 X+005d1
+ר   X+005e8
+א   X+005d0
+␠   X+00020
+א   X+005d0
+ל   X+005dc
+ה   X+005d4
+י   X+005d9
+ם   X+005dd
+␠א  X+00020 X+005d0
+ת   X+005ea
+␠   X+00020
+ה   X+005d4
+ש   X+005e9
+מ   X+005de
+י   X+005d9
+ם   X+005dd
+␠ו  X+00020 X+005d5
+א   X+005d0
+ת   X+005ea
+␠   X+00020
+ה   X+005d4
+א   X+005d0
+ר   X+005e8
+ץ   X+005e5
+׃   X+005c3
+␍␊  X+0000d X+0000a
+++++++++++ Shell got Return code number 0 for small file with lengthier lines++++++++++
+
+++++++++++ udmp john3_16.txt +++English and Greek text file (left to right text) check++++++++++
+John 3:16
+English (NIV); -
+For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.
+Greek; -
+οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον, ὥστε τὸν υἱὸν τὸν μονογενῆ ἔδωκεν ἵνα πᾶς ὁ πιστεύων εἰς αὐτὸν μὴ ἀπόληται ἀλλ’ ἔχῃ ζωὴν αἰώνιον.
+++++++++++ Shell got Return code number 0 for File with spaces shown in the ASCII column++++++++++
+
+++++++++++ udmp test.txt  +++File with invalid UTF-8 strings in it++++++++++
+# Valid UTF-8 Characters
+English: This is a valid UTF-8 encoded sentence.
+Greek: Αυτό είναι μια έγκυρη πρόταση κωδικοποιημένη σε UTF-8.
+
+# Invalid UTF-8 Characters
+Overlong Encoding: \xC0\xAF ��
+Invalid Byte: \xC3\x28 �(
+Unexpected Continuation Byte: \xA0\xA1 ��
+Truncated Character Sequence: \xE2\x82 ��
+Invalid Code Point: \xF5\x90\x80\x80 ����
+
+++++++++++ Shell got Return code number 0 for File test.txt++++++++++
+
+${TEN_PLUSS} cat gen1_1.txt | $EXE -v -o stdinTest.tst  +++stdin input with file output check${TEN_PLUSS}
+udmp version 0v0
+Processed 66 chars from stdin
+++++++++++ Shell got Return code number 0 for input through stdin and output to a File++++++++++
+${TEN_PLUSS} cat stdinTest.tst  +++show output file check${TEN_PLUSS}
+בראשית ברא אלהים את השמים ואת הארץ׃
+Info: 66 Bytes, 37 Code Points output, 0 substitutions
+++++++++++ Shell got Return code number 0 for File output++++++++++
+
+++++++++++ udmp -vVh  +++Usage/help verbose and version information check++++++++++
+udmp version 0v0
+Usage:
+ udmp [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILES]
+ -A ...... enable ascii column in output mode
+ -C ...... enable utf code point colummn in output
+ -D ...... enable debug output mode
+ -h ...... this help / usage information
+ -H ...... enable hexadecimal column in output
+ -I ...... enable index column in output mode
+ -o TXT .. send the output to a file named TXT
+ -v ...... enable more verbose information output
+ -V ...... enable version information output
+ -w INT .. output INT bytes per line - where 1 <= INT <= 128
+++++++++++ Shell got Return code number 0 for usage/help, version and verbose options++++++++++
+
+++++++++++ udmp -v john3_16.txt gen1_1.txt test.txt +++check multilpe file input++++++++++
+udmp version 0v0
+Info: Start of File "john3_16.txt"
+John 3:16
+English (NIV); -
+For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.
+Greek; -
+οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον, ὥστε τὸν υἱὸν τὸν μονογενῆ ἔδωκεν ἵνα πᾶς ὁ πιστεύων εἰς αὐτὸν μὴ ἀπόληται ἀλλ’ ἔχῃ ζωὴν αἰώνιον.
+Info: 444 Bytes, 308 Code Points output, 0 substitutions
+Info: End of File "john3_16.txt" (444 data bytes processed)
+Info: Start of File "gen1_1.txt"
+בראשית ברא אלהים את השמים ואת הארץ׃
+Info: 66 Bytes, 37 Code Points output, 0 substitutions
+Info: End of File "gen1_1.txt" (66 data bytes processed)
+Info: Start of File "test.txt"
+# Valid UTF-8 Characters
+English: This is a valid UTF-8 encoded sentence.
+Greek: Αυτό είναι μια έγκυρη πρόταση κωδικοποιημένη σε UTF-8.
+
+# Invalid UTF-8 Characters
+Overlong Encoding: \xC0Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xc0 at offset 233: Illegal byte sequence
+Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xaf at offset 234: Illegal byte sequence
+\xAF ��
+Invalid Byte: \xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xc3 at offset 259: Illegal byte sequence
+C3\x28 �(
+Unexpected Continuation Byte: \xA0\xA1Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xa0 at offset 301: Illegal byte sequence
+Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xa1 at offset 302: Illegal byte sequence
+ ��
+Truncated Character Sequence: \xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xe2 at offset 343: Illegal byte sequence
+Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0x82 at offset 344: Illegal byte sequence
+E2\x82 ��
+Invalid Code Point: \xF5\xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0xf5 at offset 383: Illegal byte sequence
+90\x80\x80 �Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0x90 at offset 384: Illegal byte sequence
+Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0x80 at offset 385: Illegal byte sequence
+Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
+Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+
+Error: Encoding Error for char 0x80 at offset 386: Illegal byte sequence
+���
+
+Info: 389 Bytes, 348 Code Points output, 0 substitutions
+Info: End of File "test.txt" (389 data bytes processed)
+++++++++++ Shell got Return code number 0 for multiple file input check++++++++++

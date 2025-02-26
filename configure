@@ -1,0 +1,76 @@
+#! /bin/bash
+#
+# C O N F I G U R E
+#
+# configure last edited on Thu Jun 13 22:40:49 2024 
+#
+# This script writes a Makefile
+#
+NAME=udmp
+NAME1=config
+NAME2=genFun
+#
+OP_FILE_NAME=Makefile
+COMPILER=cc
+OPTIONS="-Wall -pedantic"
+LNK_OPTIONS=""
+TRGT=$NAME
+SRC=$NAME.c
+SRC1=$NAME1.c
+SRC2=$NAME2.c
+OBJ=$NAME.o
+OBJ1=$NAME1.o
+OBJ2=$NAME2.o
+HDR1=$NAME1.h
+HDR2=$NAME2.h
+#
+# echo $OSTYPE
+#
+if [[ "$OSTYPE" == "cygwin" ]] ; then
+  TRGT=$NAME.exe
+elif [[ "$OSTYPE" == "msys" ]] ; then
+  TRGT=$NAME.exe
+  COMPILER=gcc
+  LNK_OPTIONS="-static"
+fi
+#
+echo "$TRGT: $OBJ $OBJ1 $OBJ2" > $OP_FILE_NAME
+echo -e "\t$COMPILER -o "'$@ $^' >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "$OBJ: $SRC $HDR1 $HDR2" >> $OP_FILE_NAME
+echo -e "\t$COMPILER $OPTIONS -c -UDEBUG "'$<' >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "$SRC1: $NAME1.json proto.c write_config.py" >> $OP_FILE_NAME
+echo -e "\tpython3 write_config.py" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "$HDR1: $NAME1.json proto.h write_config.py" >> $OP_FILE_NAME
+echo -e "\tpython3 write_config.py" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "$OBJ1: $SRC1 $HDR1 $HDR2" >> $OP_FILE_NAME
+echo -e "\t$COMPILER $OPTIONS -c -UDEBUG "'$<' >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "$OBJ2: $SRC2 $HDR2" >> $OP_FILE_NAME
+echo -e "\t$COMPILER $OPTIONS -c -UDEBUG "'$<' >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "check: $TRGT" >> $OP_FILE_NAME
+echo -e "\tcd test; ./check" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "chk: $TRGT" >> $OP_FILE_NAME
+echo -e "\tcd test; ./chk" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "clean:" >> $OP_FILE_NAME
+echo -e "\trm -f $TRGT $NAME.o $NAME1.o $NAME2.o" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#
+echo "debug: clean" >> $OP_FILE_NAME
+echo -e "\t$COMPILER $OPTIONS -DDEBUG -g -o $TRGT $SRC $SRC1 $SRC2 $LNK_OPTIONS" >> $OP_FILE_NAME
+echo "" >> $OP_FILE_NAME
+#

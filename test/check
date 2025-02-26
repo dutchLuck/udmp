@@ -1,0 +1,14 @@
+#! /bin/sh
+#
+# check last edited on Mon Jun 10 23:16:31 2024 
+#
+# Test known data
+#
+echo 1. Test predefined test against known correct results
+#
+rm -f tstResults
+#
+# redirect both stdout and stderr output to tstResults file
+./tst > tstResults 2>&1
+diff -s tstResults correctResults
+#

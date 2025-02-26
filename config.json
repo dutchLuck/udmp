@@ -1,0 +1,74 @@
+{
+	"ascii": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "A",
+		"long": "ascii",
+		"help": "...... enable ascii column in output mode"
+	},
+	"utf-8": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "C",
+		"long": "code_point",
+		"help": "...... enable utf code point colummn in output"
+	},
+	"debug": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "D",
+		"long": "debug",
+		"help": "...... enable debug output mode"
+	},
+	"help": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "h",
+		"long": "help",
+		"help": "...... this help / usage information"
+	},
+	"hex": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "H",
+		"long": "hex",
+		"help": "...... enable hexadecimal column in output"
+	},
+	"index": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "I",
+		"long": "index",
+		"help": "...... enable index column in output mode"
+	},
+	"output": {
+		"type": "optStr",
+		"default": "",
+		"short": "o",
+		"long": "output_file",
+		"help": "TXT .. send the output to a file named TXT"
+	},
+	"verbose": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "v",
+		"long": "verbose",
+		"help": "...... enable more verbose information output"
+	},
+	"version": {
+		"type": "optFlg",
+		"default": "false",
+		"short": "V",
+		"long": "version",
+		"help": "...... enable version information output"
+	},
+	"width": {
+		"type": "optInt",
+		"default": 12,
+		"short": "w",
+		"long": "width",
+		"most_pos_limit": 128,
+		"most_neg_limit": 1,
+		"help": "INT .. output INT bytes per line - where 1 <= INT <= 128"
+	}
+}

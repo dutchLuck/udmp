@@ -1,0 +1,66 @@
+#! /bin/sh
+#
+# T S T
+#
+# tst last edited on Fri Jun 21 23:26:28 2024 
+#
+# To redirect both stdout and stderr to a file, use ampersand redirect operation, for example; -
+#  ./tst &> outputFile
+#
+EXE=udmp
+TEN_PLUSS=++++++++++
+#
+# Test valid right to left text and if no options mode has any sensitivity to file length
+echo ""
+echo "${TEN_PLUSS} $EXE gen1_1.txt  +++Small valid Hebrew (right to left text) file, no options check${TEN_PLUSS}"
+../$EXE gen1_1.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for small valid file gen1_1.txt, no options check${TEN_PLUSS}"
+#
+echo ""
+echo "${TEN_PLUSS} $EXE -IHACv gen1_1.txt +++Small file, Index, Hex, Ascii, UTF-8 Code points and verbose options check${TEN_PLUSS}"
+../$EXE -IHACv gen1_1.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for small file, no address, no ascii and verbose options check${TEN_PLUSS}"
+#
+echo ""
+echo "${TEN_PLUSS} $EXE -w2 -C gen1_1.txt +++Small file with 2 byte wide lines and Code points${TEN_PLUSS}"
+../$EXE -w2 -C gen1_1.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for small file with lengthier lines${TEN_PLUSS}"
+#
+# Test valid left to right non English text
+echo ""
+echo "${TEN_PLUSS} $EXE john3_16.txt +++English and Greek text file (left to right text) check${TEN_PLUSS}"
+../$EXE john3_16.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for File with spaces shown in the ASCII column${TEN_PLUSS}"
+#
+echo ""
+echo "${TEN_PLUSS} $EXE test.txt  +++File with invalid UTF-8 strings in it${TEN_PLUSS}"
+../$EXE test.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for File test.txt${TEN_PLUSS}"
+#
+echo ""
+echo '${TEN_PLUSS} cat gen1_1.txt | $EXE -v -o stdinTest.tst  +++stdin input with file output check${TEN_PLUSS}'
+cat gen1_1.txt | ../$EXE -v -o stdinTest.tst
+echo "${TEN_PLUSS} Shell got Return code number $? for input through stdin and output to a File${TEN_PLUSS}"
+echo '${TEN_PLUSS} cat stdinTest.tst  +++show output file check${TEN_PLUSS}'
+cat stdinTest.tst
+echo "${TEN_PLUSS} Shell got Return code number $? for File output${TEN_PLUSS}"
+#
+echo ""
+echo "${TEN_PLUSS} $EXE -vVh  +++Usage/help verbose and version information check${TEN_PLUSS}"
+../$EXE -vVh
+echo "${TEN_PLUSS} Shell got Return code number $? for usage/help, version and verbose options${TEN_PLUSS}"
+#
+echo ""
+echo "${TEN_PLUSS} $EXE -v john3_16.txt gen1_1.txt test.txt +++check multilpe file input${TEN_PLUSS}"
+../$EXE -v john3_16.txt gen1_1.txt test.txt
+echo "${TEN_PLUSS} Shell got Return code number $? for multiple file input check${TEN_PLUSS}"
+#
+#echo ""
+#echo "${TEN_PLUSS} $EXE wikipedia.hex checkSumErr.hex  +++2 Files one of which has checksum Error check${TEN_PLUSS}"
+#../$EXE wikipedia.hex checkSumErr.hex
+#echo "${TEN_PLUSS} Shell got Return code number $? for 2 Files one of which has checksum Error File check${TEN_PLUSS}"
+#
+#echo ""
+#echo "${TEN_PLUSS} cat wikipedia.hex | $EXE  +++Test pipe into stdin${TEN_PLUSS}"
+#cat wikipedia.hex | ../$EXE
+#echo "${TEN_PLUSS} Shell got Return code number $? for Test pipe into stdin${TEN_PLUSS}"
