@@ -1,7 +1,7 @@
 /*
  * U D M P . C
  *
- * Last Modified on Wed Feb 26 18:31:13 2025
+ * Last Modified on Thu Feb 27 21:09:14 2025
  *
  * Displays UTF-8 char/symbols in a file or from stdin
  *
@@ -39,7 +39,7 @@
 #define TRUE (!(FALSE))
 #endif
 
-#define VERSION_INFO "0v0"
+#define VERSION_INFO "0v1"
 #define ARRAY_SIZE 128
 #define BYTEMASK 0xFF
 
@@ -325,79 +325,97 @@ void  outputAsciiArrayIfRequired( struct config *  cfg, int  nChrIn_ncArray, uns
 }
 
 
+void  debug_inArrayInternalFormat( unsigned char  inArray[], FILE *  dbg_fp )  {
+  int  i;
+  size_t  codePoint;
+  size_t  wCharLen, local_wCharLen;
+  unsigned char  testArray[ 5 ];
+  mbstate_t  mbs2;
+
+  fflush( dbg_fp );   /* be careful in-case debug info isn't going to stdout like we assume else where */
+  wprintf( L"\nDebug: inArray: multi-byte string: " );
+  for ( i = 0; i < 4; i++ )  fwprintf( dbg_fp, L"%02x ", inArray[ i ]);
+  fwprintf( dbg_fp, L"=> Code Point:" );
+  fwprintf( dbg_fp, L" U+%05x ", ( codePoint = conv_UTF8_ToCodePoint( inArray )));
+  fwprintf( dbg_fp, L"=> Character/Symbol: '" );
+  if ( outputWideCharArrayWithSubstitutesForLineFormatDisrupters( 1, ( wchar_t * ) &codePoint, dbg_fp ) == 0 )
+    fwprintf( dbg_fp, L"' (no " );
+  else  fwprintf( dbg_fp, L"' (" );
+  fwprintf( dbg_fp, L"substitution made), UTF-8 string: " );
+  if ( convCodePointToUTF8( codePoint, testArray ) != NULL )  {
+    for ( i = 0; i < 4; i++ )  fwprintf( dbg_fp, L" %02x", testArray[ i ]);
+  }
+  fputwc( L'\n', dbg_fp );
+  memset( &mbs2, 0, sizeof(mbs2));
+  wCharLen = mbrlen((char *) inArray, ( size_t ) 4, &mbs2 );  /* get number of bytes in the character with stdlib call */
+  local_wCharLen = sizeOf_UTF8_Char( inArray );   /* get number of bytes in the character with in-house written function */
+  if ( wCharLen != local_wCharLen )
+    fwprintf( dbg_fp, L"Debug: multi-byte char length from mbrlen() is %lu bytes vs local: %lu\n", wCharLen, local_wCharLen );
+  fflush( dbg_fp );   /* be careful in-case debug info isn't going to stdout like we assume else where */
+}
+
+
 int  outputData( struct config *  cfg, FILE *  fp, FILE *  ofp )  {      /* produce wide character output from a file */
   int  i, c, rmCnt, activeBytesInBuffer, chrIn_cArray, size;
   int  byteCnt, lineCnt;
   int  wChrIn_wcArray, wChrOutput, substitutions;
-  unsigned char  inArray[ 5 ], testArray[ 5 ];
+  unsigned char  inArray[ 5 ];
   unsigned char *  inPtr;
   char  pStr[ 80 ];    /* Storage for perror() string */
   unsigned char  cArray[ ARRAY_SIZE ];     /* Storage for byte size characters */
   wchar_t  wcArray[ ARRAY_SIZE ]; /* Storage for wide characters */
   wchar_t *  wcPtr;
-  mbstate_t  mbs, mbs2;
-  size_t  wCharLen, local_wCharLen, codePoint;
+  mbstate_t  mbs;
+  size_t  wCharLen, local_wCharLen;
 
   c = wChrIn_wcArray = wChrOutput = substitutions = chrIn_cArray = byteCnt = lineCnt = 0;
   activeBytesInBuffer = 0;
   rmCnt = 4;  /* Need a complete fill of inArray() */
   wcPtr = wcArray;
   memset( &mbs, 0, sizeof(mbs));
-  memset( &mbs2, 0, sizeof(mbs2));
   size = ( cfg->w.active ) ? cfg->w.optionInt : cfg->w.defaultVal;
   /* Loop to read bytes from a file into an array - try to ensure 4 unprocessed bytes in the Array each time */
   while (( activeBytesInBuffer = removeCntBytesFromTheStartOfTheArrayAndReplaceThemWithNewEndBytes(
       fp, inArray, rmCnt, 4, activeBytesInBuffer )) > 0 )  {   /* stop loop when no unprocessed bytes available */
     /* The inArray has least 1 byte available to process and hopefully a UTF-8 char ( of 1 to 4 bytes ) */
     inPtr = inArray;
-    if ( cfg->D.active )  { /* Provide more info on the low level data */
-      wprintf( L"\nDebug: inArray: multi-byte string: " );
-      for ( i = 0; i < 4; i++ )  wprintf( L"%02x ", inArray[ i ]);
-      wprintf( L"=> Code Point:" );
-      wprintf( L" U+%05x ", ( codePoint = conv_UTF8_ToCodePoint( inArray )));
-      wprintf( L"=> Character/Symbol: '" );
-      if ( outputWideCharArrayWithSubstitutesForLineFormatDisrupters( 1, ( wchar_t * ) &codePoint, ofp ) == 0 )
-        wprintf( L"' (no " );
-      else  wprintf( L"' (" );
-      wprintf( L"substitution made), UTF-8 string: " );
-      if ( convCodePointToUTF8( codePoint, testArray ) != NULL )  {
-        for ( i = 0; i < 4; i++ )  wprintf( L" %02x", testArray[ i ]);
-      }
-      fputwc( L'\n', ofp );
-    }
-    wCharLen = mbrlen((char *) inArray, ( size_t ) 4, &mbs2 );  /* get number of bytes in the character with stdlib call */
-    local_wCharLen = sizeOf_UTF8_Char( inArray );   /* get number of bytes in the character with in-house written function */
-    if (( wCharLen != local_wCharLen ) && ( cfg->v.active || cfg->D.active ))
-      fprintf( stderr, "Warning: multi-byte char length from mbrlen() is %lu bytes vs local: %lu\n", wCharLen, local_wCharLen );
+    if ( cfg->D.active )    /* Provide more info on the low level data */
+      debug_inArrayInternalFormat( inArray, stdout );   /* send debug info stdout */
     wCharLen = mbrtowc( wcPtr, (char *) inArray, ( size_t ) 4, &mbs );      /* put valid utf-8 mb char into wide chr string */
+    local_wCharLen = sizeOf_UTF8_Char( inArray );   /* get number of bytes in the character with in-house written function */
     if (( wCharLen > (size_t) 0 ) && ( wCharLen <= (size_t) 4 ))  wcPtr++;  /* success so increment pointer */
+    else  {   /* might be a correctly determined error on MacOS or incorrectly flagged on linux so try local work-around */
+      *wcPtr = conv_UTF8_ToCodePoint( inArray );  /* try to work around linux difficulties with local routine */
+      if ( *wcPtr == 0xfffd )  wCharLen = (size_t) -1;  /* flag error in local conversion */
+      else  wCharLen = local_wCharLen;    /* procede with the assumption that the local routine worked correctly */
+    }
     if (( wCharLen != local_wCharLen ) && cfg->v.active)
-      fprintf( stderr, "Warning: length of UTF-8 character discrepancy (mbrtowc(): %lu vs local: %lu)\n", wCharLen, local_wCharLen );
+      fprintf( stderr, "\nWarning: length of UTF-8 character discrepancy between stdlib mbrtowc(): %lu and local: %lu)\n", wCharLen, local_wCharLen );
     if ( cfg->D.active )  {
       wprintf( L"\nDebug: Wide Char length from mbrtowc()) is %lu (local calc is %lu)\n", wCharLen, local_wCharLen );
     }
     /* Handle an encoding error if there was one */
     if ( wCharLen == (size_t) -1 )  {
-      if ( cfg->D.active )  wprintf( L"\nDebug: encoding error at sequence starting with 0x%02x\n", *inArray);
       if ( cfg->v.active )  {
-        snprintf( pStr, 80, "\nError: Encoding Error for char 0x%02x at offset %d", *inArray, byteCnt);
+        snprintf( pStr, 80, "\nError: Encoding Error (starting) at byte count %d for char 0x%02x", byteCnt, *inArray );
         perror( pStr );       /* report error to stderr */
       }
       *wcPtr++ = 0xfffd;    /* substitute a question mark in-place of the invalid wide character */
-      wCharLen  = 1;
+      substitutions += 1;   /* track number of substutions */
+      wCharLen = 1;
     } /* encoding error */
     /* Handle an incomplete encoding error if there was one */
     if ( wCharLen == (size_t) -2 )  {
-      if ( cfg->D.active )  wprintf( L"\nDebug: incomplete decode error\n");
       if ( cfg->v.active )  {
-        snprintf( pStr, 80, "\nError: Incomplete Error for char 0x%02x at offset %d", *inArray, byteCnt);
+        snprintf( pStr, 80, "\nError: Incomplete Error starting at byte count %d for char 0x%02x", byteCnt, *inArray );
         perror( pStr );
       } /* incomplete error */
+      wCharLen = 1;
     }  /* incomplete decode - more bytes needed */
     if ( wCharLen == (size_t) 0 )  {
       if ( cfg->D.active )  wprintf( L"\nDebug: found wide null character\n");
       *wcPtr++ = L'\0';    /* substitute a NULL in-place of the 0x00 (NULL) character */
-      wCharLen  = 1;
+      wCharLen = 1;
     }   /* found wide null character */
     wChrIn_wcArray += 1;
     for ( i = ( int ) wCharLen; i > 0; i-- )  {
@@ -411,7 +429,7 @@ int  outputData( struct config *  cfg, FILE *  fp, FILE *  ofp )  {      /* prod
       byteCnt += 1;   /* update the byte count after the index is output, if it is required */
       /* Output the Hex representation of each byte */
       c &= BYTEMASK;    /* Ensure int is between 0x00 and 0xff */
-      if ( cfg->H.active )  fwprintf( ofp, L"%02x ", c);    /* Output Hex if enabled */
+      if ( cfg->H.active )  fwprintf( ofp, L"%02x ", c );    /* Output Hex if enabled */
       /* Accumulate an array of bytes to be treated as Ascii char equivalent to the bytes */
       cArray[ chrIn_cArray++ ] = ( unsigned char ) c;
       /* Output the Ascii equivalents if line of Hex is complete */

@@ -4,7 +4,7 @@
 ++++++++++ Shell got Return code number 0 for small valid file gen1_1.txt, no options check++++++++++
 
 ++++++++++ udmp -IHACv gen1_1.txt +++Small file, Index, Hex, Ascii, UTF-8 Code points and verbose options check++++++++++
-udmp version 0v0
+udmp version 0v1
 Info: Start of File "gen1_1.txt"
          0  d7 91 d7 a8 d7 90 d7 a9 d7 99 d7 aa  ............  בראשית        X+005d1 X+005e8 X+005d0 X+005e9 X+005d9 X+005ea
         12  20 d7 91 d7 a8 d7 90 20 d7 90 d7 9c  ␠......␠....  ␠ברא␠אל       X+00020 X+005d1 X+005e8 X+005d0 X+00020 X+005d0 X+005dc
@@ -75,7 +75,7 @@ Invalid Code Point: \xF5\x90\x80\x80 ����
 ++++++++++ Shell got Return code number 0 for File test.txt++++++++++
 
 ${TEN_PLUSS} cat gen1_1.txt | $EXE -v -o stdinTest.tst  +++stdin input with file output check${TEN_PLUSS}
-udmp version 0v0
+udmp version 0v1
 Processed 66 chars from stdin
 ++++++++++ Shell got Return code number 0 for input through stdin and output to a File++++++++++
 ${TEN_PLUSS} cat stdinTest.tst  +++show output file check${TEN_PLUSS}
@@ -84,7 +84,7 @@ Info: 66 Bytes, 37 Code Points output, 0 substitutions
 ++++++++++ Shell got Return code number 0 for File output++++++++++
 
 ++++++++++ udmp -vVh  +++Usage/help verbose and version information check++++++++++
-udmp version 0v0
+udmp version 0v1
 Usage:
  udmp [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILES]
  -A ...... enable ascii column in output mode
@@ -100,7 +100,7 @@ Usage:
 ++++++++++ Shell got Return code number 0 for usage/help, version and verbose options++++++++++
 
 ++++++++++ udmp -v john3_16.txt gen1_1.txt test.txt +++check multilpe file input++++++++++
-udmp version 0v0
+udmp version 0v1
 Info: Start of File "john3_16.txt"
 John 3:16
 English (NIV); -
@@ -119,56 +119,56 @@ English: This is a valid UTF-8 encoded sentence.
 Greek: Αυτό είναι μια έγκυρη πρόταση κωδικοποιημένη σε UTF-8.
 
 # Invalid UTF-8 Characters
-Overlong Encoding: \xC0Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Overlong Encoding: \xC0
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0xc0 at offset 233: Illegal byte sequence
-Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Error: Encoding Error (starting) at byte count 233 for char 0xc0: Illegal byte sequence
 
-Error: Encoding Error for char 0xaf at offset 234: Illegal byte sequence
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
+
+Error: Encoding Error (starting) at byte count 234 for char 0xaf: Illegal byte sequence
 \xAF ��
-Invalid Byte: \xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Invalid Byte: \x
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0xc3 at offset 259: Illegal byte sequence
+Error: Encoding Error (starting) at byte count 259 for char 0xc3: Illegal byte sequence
 C3\x28 �(
-Unexpected Continuation Byte: \xA0\xA1Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Unexpected Continuation Byte: \xA0\xA1
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0xa0 at offset 301: Illegal byte sequence
-Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Error: Encoding Error (starting) at byte count 301 for char 0xa0: Illegal byte sequence
 
-Error: Encoding Error for char 0xa1 at offset 302: Illegal byte sequence
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
+
+Error: Encoding Error (starting) at byte count 302 for char 0xa1: Illegal byte sequence
  ��
-Truncated Character Sequence: \xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Truncated Character Sequence: \x
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0xe2 at offset 343: Illegal byte sequence
-Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Error: Encoding Error (starting) at byte count 343 for char 0xe2: Illegal byte sequence
 
-Error: Encoding Error for char 0x82 at offset 344: Illegal byte sequence
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
+
+Error: Encoding Error (starting) at byte count 344 for char 0x82: Illegal byte sequence
 E2\x82 ��
-Invalid Code Point: \xF5\xWarning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Invalid Code Point: \xF5\x
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0xf5 at offset 383: Illegal byte sequence
-90\x80\x80 �Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Error: Encoding Error (starting) at byte count 383 for char 0xf5: Illegal byte sequence
+90\x80\x80 �
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0x90 at offset 384: Illegal byte sequence
-Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Error: Encoding Error (starting) at byte count 384 for char 0x90: Illegal byte sequence
 
-Error: Encoding Error for char 0x80 at offset 385: Illegal byte sequence
-Warning: multi-byte char length from mbrlen() is 18446744073709551615 bytes vs local: 0
-Warning: length of UTF-8 character discrepancy (mbrtowc(): 18446744073709551615 vs local: 0)
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
 
-Error: Encoding Error for char 0x80 at offset 386: Illegal byte sequence
+Error: Encoding Error (starting) at byte count 385 for char 0x80: Illegal byte sequence
+
+Warning: length of UTF-8 character discrepancy between stdlib mbrtowc(): 18446744073709551615 and local: 0)
+
+Error: Encoding Error (starting) at byte count 386 for char 0x80: Illegal byte sequence
 ���
 
-Info: 389 Bytes, 348 Code Points output, 0 substitutions
+Info: 389 Bytes, 348 Code Points output, 11 substitutions
 Info: End of File "test.txt" (389 data bytes processed)
 ++++++++++ Shell got Return code number 0 for multiple file input check++++++++++
