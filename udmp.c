@@ -1,7 +1,7 @@
 /*
  * U D M P . C
  *
- * Last Modified on Thu Feb 27 21:09:14 2025
+ * Last Modified on Thu Feb 27 21:43:14 2025
  *
  * Displays UTF-8 char/symbols in a file or from stdin
  *
@@ -22,15 +22,15 @@
  */
 
 
-#include <limits.h>   /* mbrtowc() */
-#include <locale.h>   /* setlocale() */
-#include <stdio.h>		/* printf(), fwprintf(), fflush() */
-#include <stdlib.h>		/* free() */
-#include <wchar.h>    /* mbrtowc(), fwprintf() */
-#include <unistd.h>		/* getopt() */
-#include <string.h>		/* strdup() */
-#include <libgen.h>		/* basename() */
-#include "config.h"		/* struct config */
+#include <limits.h>	/* mbrtowc() */
+#include <locale.h>	/* setlocale() */
+#include <stdio.h>	/* printf(), fwprintf(), fflush() */
+#include <stdlib.h>	/* free() */
+#include <wchar.h>	/* mbrtowc(), fwprintf() */
+#include <unistd.h>	/* getopt() */
+#include <string.h>	/* strdup() */
+#include <libgen.h>	/* basename() */
+#include "config.h"	/* struct config */
 
 #ifndef FALSE
 #define FALSE 0
@@ -387,7 +387,10 @@ int  outputData( struct config *  cfg, FILE *  fp, FILE *  ofp )  {      /* prod
     else  {   /* might be a correctly determined error on MacOS or incorrectly flagged on linux so try local work-around */
       *wcPtr = conv_UTF8_ToCodePoint( inArray );  /* try to work around linux difficulties with local routine */
       if ( *wcPtr == 0xfffd )  wCharLen = (size_t) -1;  /* flag error in local conversion */
-      else  wCharLen = local_wCharLen;    /* procede with the assumption that the local routine worked correctly */
+      else  {
+	wCharLen = local_wCharLen;    /* procede with the assumption that the local routine worked correctly */
+	wcPtr++;
+      }
     }
     if (( wCharLen != local_wCharLen ) && cfg->v.active)
       fprintf( stderr, "\nWarning: length of UTF-8 character discrepancy between stdlib mbrtowc(): %lu and local: %lu)\n", wCharLen, local_wCharLen );
