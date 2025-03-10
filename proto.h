@@ -1,14 +1,14 @@
 /*
  * C O N F I G . H
  *
- * Last Modified on Mon Oct  7 15:16:03 2024
+ * Last Modified on Mon Mar 10 15:08:59 2025
  *
  */
 
 #include <stdio.h>
 
-#ifndef  OPTIONS_H
-#define  OPTIONS_H
+#ifndef  CONFIG_H
+#define  CONFIG_H
 
 #ifndef FALSE
 #define FALSE 0
@@ -16,6 +16,11 @@
 #ifndef TRUE
 #define TRUE (!(FALSE))
 #endif
+
+struct positionParam {
+  char *  paramNameStr;
+  char *  helpStr;
+};
 
 struct optFlg {
   int active;

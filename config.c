@@ -49,7 +49,7 @@ int  configureDoubleOption( struct optDbl *  dblStructPtr, char *  dblString ) {
 // Functions for Command Line Options Configuration from JSON Data
 void  usage( struct config *  opt, char *  exeName )  {
   printf( "Usage:\n");
-  printf( " %s [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILES]\n", exeName );
+  printf( " %s [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILE_1 .. [FILE_N]]\n", exeName );
   printf( " %s %s\n", opt->A.optID, opt->A.helpStr ); /* ascii */
   printf( " %s %s\n", opt->C.optID, opt->C.helpStr ); /* utf-8 */
   printf( " %s %s\n", opt->D.optID, opt->D.helpStr ); /* debug */
@@ -60,9 +60,13 @@ void  usage( struct config *  opt, char *  exeName )  {
   printf( " %s %s\n", opt->v.optID, opt->v.helpStr ); /* verbose */
   printf( " %s %s\n", opt->V.optID, opt->V.helpStr ); /* version */
   printf( " %s %s\n", opt->w.optID, opt->w.helpStr ); /* width */
+  printf( " %s %s\n", "[FILE_1 .. [FILE_N]]", "Optional Name(s) of File(s) to process" ); /* posParam1 */
 }
 
 void  initConfiguration ( struct config *  opt )  {
+// posParam1: positionParam
+  opt->posParam1.paramNameStr = "[FILE_1 .. [FILE_N]]";
+  opt->posParam1.helpStr = "Optional Name(s) of File(s) to process";
 // ascii: optFlg
   opt->A.active = FALSE;
   opt->A.optID = "-A";
@@ -158,4 +162,5 @@ void  configuration_status( struct config *  opt )  {
   printf( "Debug: option -V is %sctive (-V %s)\n", (opt->V.active) ? "a" : "ina", opt->V.helpStr); /* version */
   printf( "Debug: option -w is %sctive (-w %s)\n", (opt->w.active) ? "a" : "ina", opt->w.helpStr); /* width */
   printf( "Debug: option -w value is %d, limits: %d .. %d\n", opt->w.optionInt, opt->w.mostNegLimit, opt->w.mostPosLimit); /* width */
+  printf( "Debug: %s (%s)\n", opt->posParam1.paramNameStr, opt->posParam1.helpStr);
 }

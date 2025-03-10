@@ -1,4 +1,9 @@
 {
+	"posParam1": {
+		"type": "positionParam",
+		"name": "[FILE_1 .. [FILE_N]]",
+		"help": "Optional Name(s) of File(s) to process"
+	},
 	"ascii": {
 		"type": "optFlg",
 		"default": "false",

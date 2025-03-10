@@ -2,7 +2,7 @@
 # 
 # W R I T E _ C O N F I G . P Y
 #
-# Last Modified on Mon Feb 17 11:40:10 2025
+# Last Modified on Mon Mar 10 15:11:19 2025
 #
 # Read information about command line options from a json file
 # and write config files to partially automate the command
@@ -42,13 +42,25 @@ def obtain_usage(data):
             shorts.append(f"[-{value.get('short', '')} DBL]")
         elif config_type == 'optChr':
             shorts.append(f"[-{value.get('short', '')} CHR]")
+        elif config_type == 'positionParam': {}
         else:
             shorts.append(f"[-{value.get('short', '')}]")
-    shorts.append(' [FILES]\\n", exeName );')
+    for value in data.values():
+        config_type = value.get('type')
+        if config_type == 'positionParam':
+            shorts.append(f" {value.get('name', '')}")
+    shorts.append('\\n", exeName );')
     lines_usage.append( ''.join(shorts))
     for key, value in data.items():
-        short = value.get('short', 'N/A')
-        lines_usage.append(f'  printf( " %s %s\\n", opt->{short}.optID, opt->{short}.helpStr ); /* {key} */')
+        config_type = value.get('type')
+        if config_type != 'positionParam':
+            short = value.get('short', 'N/A')
+            lines_usage.append(f'  printf( " %s %s\\n", opt->{short}.optID, opt->{short}.helpStr ); /* {key} */')
+    for key, value in data.items():
+        config_type = value.get('type')
+        if config_type == 'positionParam':
+            short = value.get('name', 'N/A')
+            lines_usage.append(f'  printf( " %s %s\\n", \"{value.get("name", "")}\", \"{value.get("help", "")}\" ); /* {key} */')
     return lines_usage
 
 
@@ -58,19 +70,23 @@ def obtain_debug_status(data):
 
     lines_status.append('void  configuration_status( struct config *  opt )  {')
     for key, value in data.items():
-        short = value.get('short', 'N/A')
-        lines_status.append(f'  printf( "Debug: option -{short} is %sctive (-{short} %s)\\n", (opt->{short}.active) ? "a" : "ina", opt->{short}.helpStr); /* {key} */')
-        config_type = value.get('type')
-        if config_type == 'optStr':
-            lines_status.append(f'  printf( "Debug: option -{short} value is \\"%s\\"\\n", opt->{short}.optionStr); /* {key} */')
-        elif config_type == 'optInt':
-            lines_status.append(f'  printf( "Debug: option -{short} value is %d, limits: %d .. %d\\n", opt->{short}.optionInt, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
-        elif config_type == 'optLng':
-            lines_status.append(f'  printf( "Debug: option -{short} value is %ld, limits: %ld .. %ld\\n", opt->{short}.optionLng, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
-        elif config_type == 'optDbl':
-            lines_status.append(f'  printf( "Debug: option -{short} value is %lg, limits: %lg .. %lg\\n", opt->{short}.optionDbl, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
-        elif config_type == 'optChr':
-            lines_status.append(f'  printf( "Debug: option -{short} value is \'%c\'\\n", opt->{short}.optionChr); /* {key} */')
+        if value.get('type', 'N/A') != 'positionParam':
+            short = value.get('short', 'N/A')
+            lines_status.append(f'  printf( "Debug: option -{short} is %sctive (-{short} %s)\\n", (opt->{short}.active) ? "a" : "ina", opt->{short}.helpStr); /* {key} */')
+            config_type = value.get('type')
+            if config_type == 'optStr':
+                lines_status.append(f'  printf( "Debug: option -{short} value is \\"%s\\"\\n", opt->{short}.optionStr); /* {key} */')
+            elif config_type == 'optInt':
+                lines_status.append(f'  printf( "Debug: option -{short} value is %d, limits: %d .. %d\\n", opt->{short}.optionInt, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
+            elif config_type == 'optLng':
+                lines_status.append(f'  printf( "Debug: option -{short} value is %ld, limits: %ld .. %ld\\n", opt->{short}.optionLng, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
+            elif config_type == 'optDbl':
+                lines_status.append(f'  printf( "Debug: option -{short} value is %lg, limits: %lg .. %lg\\n", opt->{short}.optionDbl, opt->{short}.mostNegLimit, opt->{short}.mostPosLimit); /* {key} */')
+            elif config_type == 'optChr':
+                lines_status.append(f'  printf( "Debug: option -{short} value is \'%c\'\\n", opt->{short}.optionChr); /* {key} */')
+    for key, value in data.items():
+        if value.get('type', 'N/A') == 'positionParam':
+            lines_status.append(f'  printf( "Debug: %s (%s)\\n", opt->{key}.paramNameStr, opt->{key}.helpStr);')
     return lines_status
 
 
@@ -81,29 +97,34 @@ def init_config(data):
     lines_init.append('void  initConfiguration ( struct config *  opt )  {')
     for key, value in data.items():
         opt_type = value.get('type', 'N/A')
-        short = value.get('short', 'N/A')
         help_text = value.get('help', 'N/A')
         lines_init.append(f"// {key}: {opt_type}")
-        lines_init.append(f"  opt->{short}.active = FALSE;")
-        lines_init.append(f'  opt->{short}.optID = "-{short}";')
-        lines_init.append(f'  opt->{short}.helpStr = "{help_text}";')
-        if opt_type == 'optStr':
-            lines_init.append(f'  opt->{short}.optionStr = "{value.get("default", "")}";')
-        elif opt_type == 'optInt':
-            lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
-            lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
-            lines_init.append(f'  opt->{short}.optionInt = {value.get("default", "")};')
-            lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
-        elif opt_type == 'optLng':
-            lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
-            lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
-            lines_init.append(f'  opt->{short}.optionLng = {value.get("default", "")};')
-            lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
-        elif opt_type == 'optDbl':
-            lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
-            lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
-            lines_init.append(f'  opt->{short}.optionDbl = {value.get("default", "")};')
-            lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
+        if opt_type == 'positionParam':
+            name_str = value.get('name', 'N/A')
+            lines_init.append(f'  opt->{key}.paramNameStr = "{name_str}";')
+            lines_init.append(f'  opt->{key}.helpStr = "{help_text}";')
+        else:
+            short = value.get('short', 'N/A')
+            lines_init.append(f"  opt->{short}.active = FALSE;")
+            lines_init.append(f'  opt->{short}.optID = "-{short}";')
+            lines_init.append(f'  opt->{short}.helpStr = "{help_text}";')
+            if opt_type == 'optStr':
+                lines_init.append(f'  opt->{short}.optionStr = "{value.get("default", "")}";')
+            elif opt_type == 'optInt':
+                lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
+                lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
+                lines_init.append(f'  opt->{short}.optionInt = {value.get("default", "")};')
+                lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
+            elif opt_type == 'optLng':
+                lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
+                lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
+                lines_init.append(f'  opt->{short}.optionLng = {value.get("default", "")};')
+                lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
+            elif opt_type == 'optDbl':
+                lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
+                lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
+                lines_init.append(f'  opt->{short}.optionDbl = {value.get("default", "")};')
+                lines_init.append(f'  opt->{short}.defaultVal = {value.get("default", "")};')
     return lines_init
 
 
@@ -134,14 +155,14 @@ def set_config(data):
     lines_set.append("      case '?' : {")
     shorts.append('        if ( strchr( "')
     for value in data.values():
-        if value.get('type') != 'optFlg':
+        if value.get('type', 'N/A') in [ 'optStr', 'optInt', 'optLng', 'optDbl' ]:
             shorts.append(f"{value.get('short', '')}")
     shorts.append('", optopt ) != NULL ) {')
     lines_set.append( ''.join(shorts))
     lines_set.append('          fprintf (stderr, "Error: Option -%c requires an argument.\\n", optopt);')
     lines_set.append('          switch ( optopt ) {')
     for value in data.values():
-        if value.get('type') != 'optFlg':
+        if value.get('type', 'N/A') in [ 'optStr', 'optInt', 'optLng', 'optDbl' ]:
             short = value.get('short', 'N/A')
             lines_set.append(f"            case '{short}': opt->{short}.active = FALSE; break;")
     lines_set.append('          }')
@@ -175,9 +196,12 @@ def extract_type_and_short(data):
     lines = []
     lines.append('struct config {')
     for key, value in data.items():
-        short = value.get('short', 'N/A')
         type_text = value.get('type', 'N/A')
-        lines.append(f"  struct {type_text} {short};  /* ({value.get('long', '')}) {value.get('help', '')} */")
+        if type_text == 'positionParam':
+            lines.append(f"  struct {type_text} {key};  /* ({key}) {value.get('help', '')} */")
+        else:
+            short = value.get('short', 'N/A')
+            lines.append(f"  struct {type_text} {short};  /* ({value.get('long', '')}) {value.get('help', '')} */")
     return lines
 
 

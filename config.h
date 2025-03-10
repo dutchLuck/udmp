@@ -1,14 +1,14 @@
 /*
  * C O N F I G . H
  *
- * Last Modified on Mon Oct  7 15:16:03 2024
+ * Last Modified on Mon Mar 10 15:08:59 2025
  *
  */
 
 #include <stdio.h>
 
-#ifndef  OPTIONS_H
-#define  OPTIONS_H
+#ifndef  CONFIG_H
+#define  CONFIG_H
 
 #ifndef FALSE
 #define FALSE 0
@@ -16,6 +16,11 @@
 #ifndef TRUE
 #define TRUE (!(FALSE))
 #endif
+
+struct positionParam {
+  char *  paramNameStr;
+  char *  helpStr;
+};
 
 struct optFlg {
   int active;
@@ -69,6 +74,7 @@ struct optDbl {
 
 // Command Line Options Configuration Data
 struct config {
+  struct positionParam posParam1;  /* (posParam1) Optional Name(s) of File(s) to process */
   struct optFlg A;  /* (ascii) ...... enable ascii column in output mode */
   struct optFlg C;  /* (code_point) ...... enable utf code point colummn in output */
   struct optFlg D;  /* (debug) ...... enable debug output mode */
@@ -82,7 +88,7 @@ struct config {
 };
 
 // getopt() option string
-#define OPTIONS "ACDhHIo:vVw:"
+#define OPTIONS ":ACDhHIo:vVw:"
 
 void  usage ( struct config *  optStructPtr, char *  exeName );
 void  initConfiguration ( struct config *  optStructPtr );
