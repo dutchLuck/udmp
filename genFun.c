@@ -1,7 +1,7 @@
 /*
  * G E N F U N . C
  *
- * genFun.c last edited Wed Jul 31 13:21:50 2024
+ * genFun.c last edited Mon May  5 20:47:31 2025
  * 
  */
 
@@ -55,9 +55,9 @@ void  fillByteArrayWithPseudoRandomData( unsigned char *  array, int  arraySize 
 	intPtr = ( int * ) array;
 	for( cnt = 0; cnt < arraySize; )  {
 		pseudoRandomInt = ( int )( rand() & 0xffffffff );	/* use of random() is far from perfect  */
-		if(( cnt + sizeof( int ) ) <= arraySize )  {	/* will a whole int fit or are we too close to full */
+		if(( cnt + __SIZEOF_INT__ ) <= arraySize )  {	/* will a whole int fit or are we too close to full */
 			*intPtr++ = pseudoRandomInt;	/* put an pseudo random integer into the array */
-			cnt += sizeof( int );
+			cnt += __SIZEOF_INT__;
 		}
 		else  {		/* fill last part of array if the array wasn't an exact multiple of integer in size */
 			chrPtr = ( unsigned char * ) intPtr;

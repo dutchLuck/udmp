@@ -86,7 +86,7 @@ Info: 66 Bytes, 37 Code Points output, 0 substitutions
 ++++++++++ udmp -vVh  +++Usage/help verbose and version information check++++++++++
 udmp version 0v1
 Usage:
- udmp [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILES]
+ udmp [-A][-C][-D][-h][-H][-I][-o TXT][-v][-V][-w INT] [FILE_1 .. [FILE_N]]
  -A ...... enable ascii column in output mode
  -C ...... enable utf code point colummn in output
  -D ...... enable debug output mode
@@ -97,6 +97,7 @@ Usage:
  -v ...... enable more verbose information output
  -V ...... enable version information output
  -w INT .. output INT bytes per line - where 1 <= INT <= 128
+ [FILE_1 .. [FILE_N]] Optional Name(s) of File(s) to process
 ++++++++++ Shell got Return code number 0 for usage/help, version and verbose options++++++++++
 
 ++++++++++ udmp -v john3_16.txt gen1_1.txt test.txt +++check multilpe file input++++++++++
