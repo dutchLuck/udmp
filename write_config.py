@@ -2,7 +2,7 @@
 # 
 # W R I T E _ C O N F I G . P Y
 #
-# Last Modified on Mon Mar 10 15:11:19 2025
+# Last Modified on Mon Jun 23 09:56:08 2025
 #
 # Read information about command line options from a json file
 # and write config files to partially automate the command
@@ -110,6 +110,8 @@ def init_config(data):
             lines_init.append(f'  opt->{short}.helpStr = "{help_text}";')
             if opt_type == 'optStr':
                 lines_init.append(f'  opt->{short}.optionStr = "{value.get("default", "")}";')
+            elif opt_type == 'optChr':
+                lines_init.append(f'  opt->{short}.optionChr = \'{value.get("default", "")}\';')
             elif opt_type == 'optInt':
                 lines_init.append(f'  opt->{short}.mostPosLimit = {value.get("most_pos_limit", "")};')
                 lines_init.append(f'  opt->{short}.mostNegLimit = {value.get("most_neg_limit", "")};')
@@ -146,6 +148,8 @@ def set_config(data):
             lines_set.append(f"      case '{short}': opt->{short}.active = TRUE; break; /* {long} */")
         if opt_type == 'optStr':
             lines_set.append(f"      case '{short}': opt->{short}.active = TRUE; opt->{short}.optionStr = optarg; break; /* {long} */")
+        if opt_type == 'optChr':
+            lines_set.append(f"      case '{short}': configureChrOption( &opt->{short}, optarg ); break; /* {long} */")
         elif opt_type == 'optInt':
             lines_set.append(f"      case '{short}': configureIntegerOption( &opt->{short}, optarg ); break; /* {long} */")
         elif opt_type == 'optLng':
@@ -155,14 +159,14 @@ def set_config(data):
     lines_set.append("      case '?' : {")
     shorts.append('        if ( strchr( "')
     for value in data.values():
-        if value.get('type', 'N/A') in [ 'optStr', 'optInt', 'optLng', 'optDbl' ]:
+        if value.get('type', 'N/A') in [ 'optStr', 'optChr', 'optInt', 'optLng', 'optDbl' ]:
             shorts.append(f"{value.get('short', '')}")
     shorts.append('", optopt ) != NULL ) {')
     lines_set.append( ''.join(shorts))
     lines_set.append('          fprintf (stderr, "Error: Option -%c requires an argument.\\n", optopt);')
     lines_set.append('          switch ( optopt ) {')
     for value in data.values():
-        if value.get('type', 'N/A') in [ 'optStr', 'optInt', 'optLng', 'optDbl' ]:
+        if value.get('type', 'N/A') in [ 'optStr', 'optChr', 'optInt', 'optLng', 'optDbl' ]:
             short = value.get('short', 'N/A')
             lines_set.append(f"            case '{short}': opt->{short}.active = FALSE; break;")
     lines_set.append('          }')

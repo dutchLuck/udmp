@@ -1,8 +1,9 @@
 /*
  * C O N F I G . C
  *
- * Last Modified on Wed Jul 31 13:25:15 2024
+ * Last Modified on Mon Jun 23 19:14:05 2025
  *
+ * 2025-Jun-22 Added Chr option handling
  */
 
 #include <stdio.h>    /* printf() */
@@ -45,3 +46,35 @@ int  configureDoubleOption( struct optDbl *  dblStructPtr, char *  dblString ) {
   return( dblStructPtr->active );
 }
 
+
+int  configureChrOption( struct optChr *  chrStructPtr, char *  chrString )  {
+  size_t  len;
+
+  len = strlen( chrString );
+  chrStructPtr->active = TRUE;
+  chrStructPtr->optionChr = ( int ) *chrString;
+  if (( *chrString == '\\' ) && ( len > ( size_t ) 1 ) && ( chrString[ 1 ] != '\\'))  {
+    switch ( chrString[ 1 ] )  {
+      case '0' : chrStructPtr->optionChr = '\0'; break;   /* NULL */
+      case 'a' : chrStructPtr->optionChr = '\a'; break;   /* audible bell */
+      case 'b' : chrStructPtr->optionChr = '\b'; break;   /* backspace */
+      case 'f' : chrStructPtr->optionChr = '\f'; break;   /* form-feed */
+      case 'n' : chrStructPtr->optionChr = '\n'; break;   /* newline */
+      case 'r' : chrStructPtr->optionChr = '\r'; break;   /* carriage return */
+      case 't' : chrStructPtr->optionChr = '\t'; break;   /* horizontal tab */
+      case 'x' :
+      case 'X' : {
+        if ( len > ( size_t ) 3 )  {
+          chrStructPtr->optionChr = convert2HexChrNibblesToInt( chrString + 2 );
+        }
+        else if ( len > ( size_t ) 2 )  {
+          chrStructPtr->optionChr = convertHexChrNibbleToInt( chrString + 2 );
+        }
+        break;
+      }
+      default :  chrStructPtr->optionChr = ','; break;    /* reinstate comma */
+    }
+    chrStructPtr->optionChr = limitIntegerValueToEqualOrWithinRange( chrStructPtr->optionChr , 0, 127 );
+  }
+  return( chrStructPtr->active );
+}
